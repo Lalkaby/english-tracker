@@ -50,3 +50,8 @@ atlassian-ide-plugin.xml
 
 # VS Code
 .vscode/
+
+
+
+/src/test/
+/src/main/resources/application.yml
