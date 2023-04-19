@@ -26,6 +26,8 @@ buildSrc/build
 /integration-tests/build
 /src/asciidoc/build
 spring-test/test-output/
+/gradle/
+!/gradle/wrapper/gradle-wrapper.jar
 
 # Maven artifacts
 pom.xml
@@ -40,18 +42,29 @@ bin
 spring-*/src/main/java/META-INF/MANIFEST.MF
 
 # IDEA artifacts and output dirs
-*.iml
+/.idea/
 *.ipr
 *.iws
-.idea
-out
-test-output
-atlassian-ide-plugin.xml
+*.iml
+*.log
+*.tmp
+*.tmp.*
+*.swp
+*.swt
+*.hprof
+out/
+.idea/
+*.iml
+.idea_modules/
 
 # VS Code
 .vscode/
 
+# Spring Boot-specific
+/target/
+!.mvn/wrapper/maven-wrapper.jar
 
+# Heroku-specific
+*.heroku*
 
 /src/test/
-/src/main/resources/application.yml

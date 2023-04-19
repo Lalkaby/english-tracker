@@ -42,14 +42,13 @@ public class TrackerEntity {
     @Builder.Default
     private Instant createdAt = Instant.now();
 
-    @ManyToOne(targetEntity = ProjectEntity.class, cascade =  CascadeType.MERGE)
+    @ManyToOne(targetEntity = ProjectEntity.class)
     @JoinColumn(name = "project_id")
     private ProjectEntity project;
 
     @Column
-    @OneToMany
+    @OneToMany(mappedBy = "tracker", cascade = CascadeType.REMOVE)
     @Builder.Default
-    @JoinColumn(name = "id_tracker", referencedColumnName = "id")
     private List<CardEntity> cards = new ArrayList<>();
 
     public Optional<TrackerEntity> getRightTracker() {

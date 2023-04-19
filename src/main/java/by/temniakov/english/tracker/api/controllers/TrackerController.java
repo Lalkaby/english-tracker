@@ -114,7 +114,7 @@ public class TrackerController {
         });
 
 
-        TrackerEntity tracker = getTrackerOrThrowException(trackerId);
+        TrackerEntity tracker = controllerHelper.getTrackerOrThrowException(trackerId);
 
         if (!optionalTrackerName.isEmpty())
         {
@@ -142,7 +142,7 @@ public class TrackerController {
             @PathVariable(name = "tracker_id") Long trackerId,
             @RequestParam(value = "left_tracker_id") Optional<Long> optionalLeftTrackerId) {
 
-        TrackerEntity changeTracker = getTrackerOrThrowException(trackerId);
+        TrackerEntity changeTracker = controllerHelper.getTrackerOrThrowException(trackerId);
         ProjectEntity project = changeTracker.getProject();
 
        Optional<Long> optionalOldLeftTrackerId = changeTracker
@@ -158,7 +158,7 @@ public class TrackerController {
                         throw new BadRequestException("Left tracker id equals changed tracker id.");
                     }
 
-                    TrackerEntity leftTrackerEntity = getTrackerOrThrowException(leftTrackerId);
+                    TrackerEntity leftTrackerEntity = controllerHelper.getTrackerOrThrowException(leftTrackerId);
 
                     if (!project.getId().equals(leftTrackerEntity.getProject().getId())){
                         throw new BadRequestException("Tracker position can be changed within the same project.");
@@ -215,7 +215,7 @@ public class TrackerController {
     @DeleteMapping(DELETE_TRACKER)
     public AckDTO deleteTracker(
             @PathVariable(name = "tracker_id") Long trackerId) {
-        TrackerEntity changeTracker = getTrackerOrThrowException(trackerId);
+        TrackerEntity changeTracker = controllerHelper.getTrackerOrThrowException(trackerId);
 
         replaceOldTrackerPosition(changeTracker);
 
@@ -245,12 +245,5 @@ public class TrackerController {
                     it.setLeftTracker(optionalOldLeftTracker.orElse(null));
                     trackerRepository.saveAndFlush(it);
                 });
-    }
-
-    private TrackerEntity getTrackerOrThrowException(Long trackerId){
-        return trackerRepository
-                .findById(trackerId)
-                .orElseThrow(() ->
-                        new NotFoundException(String.format("Tracker with \"%s\" id doesn't exist.", trackerId)));
     }
 }

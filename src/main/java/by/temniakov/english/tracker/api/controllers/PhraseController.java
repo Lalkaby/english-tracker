@@ -6,10 +6,15 @@ import by.temniakov.english.tracker.store.repositories.PhrasalVerbRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -29,8 +34,9 @@ public class PhraseController {
     public static final String GET_PHRASE_TRANSLATION2 ="/api/phrase-translation2";
 
 
+    @Async
     @GetMapping(GET_PHRASAL_VERBS)
-    public List<String> getPhrasalVerbs(
+    public CompletableFuture<List<String>> getPhrasalVerbsAsync(
             @RequestParam(value = "prefix_text", required = false) Optional<String> optionalPrefixText) {
 
         optionalPrefixText = optionalPrefixText.filter(prefixName -> !prefixName.trim().isEmpty());
@@ -52,11 +58,12 @@ public class PhraseController {
                         }
                 );
 
-        return phrasalVerbs;
+        return CompletableFuture.completedFuture(phrasalVerbs);
     }
 
+    @Async
     @GetMapping(GET_PHRASE_TRANSLATION)
-    public CompletableFuture<PhraseTranslationDTO> getPhraseTranslation(
+    public CompletableFuture<ResponseEntity<PhraseTranslationDTO>> getPhraseTranslationAsync(
             @RequestParam(value = "phrase")  String phrase
     ) {
         CompletableFuture<List<String>> translationsFuture =
@@ -65,18 +72,26 @@ public class PhraseController {
                 translationService.getExamplesAsync(phrase);
 
         return translationsFuture.thenCombine(examplesFuture, (translations, examples) ->
-                        PhraseTranslationDTO.builder()
+                        ResponseEntity.ok(PhraseTranslationDTO.builder()
                                 .phrase(phrase)
                                 .translations(translations)
                                 .examples(examples)
-                                .build())
+                                .build()))
                 .exceptionally(ex -> {
-                    log.error("Error while receiving phrase translation:", ex.getMessage());
-                    return PhraseTranslationDTO.builder()
-                            .phrase(phrase)
-                            .build();
+                    log.error("Error while receiving phrase translation:" , ex);
+                    PhraseTranslationDTO dto =
+                            PhraseTranslationDTO.builder()
+                                    .phrase(phrase)
+                                    .build();
+
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .header("X-Error-Message",
+                                    "Error while receiving phrase translation: " +
+                                            URLEncoder.encode(ex.getCause().getMessage(), StandardCharsets.UTF_8))
+                            .body(dto);
                 });
     }
+
 
     @GetMapping(GET_PHRASE_TRANSLATION2)
     public PhraseTranslationDTO getPhraseTranslation2(
@@ -88,14 +103,14 @@ public class PhraseController {
         try {
             translations = translationService.getTranslations2(phrase);
         } catch (Exception ex) {
-            log.error("Error while receiving phrase translations:", ex.getMessage());
+            log.error("Error while receiving phrase translations:", ex);
             translations = new ArrayList<>();
         }
 
         try {
             examples = translationService.getExamples2(phrase);
         } catch (Exception ex) {
-            log.error("Error while receiving phrase examples:", ex.getMessage());
+            log.error("Error while receiving phrase examples:", ex);
             examples = new ArrayList<>();
         }
 

@@ -20,10 +20,19 @@ public class CardEntity {
     @Column
     private String phrase;
 
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Instant createdAt;
+    @Builder.Default
+    @Column(
+            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            name = "created_at")
+    private Instant createdAt = Instant.now();
 
     @Builder.Default
-    @Column(name = "started_at")
-    private Instant startedAt = Instant.now();;
+    @Column(
+            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            name = "started_at")
+    private Instant startedAt = Instant.now();
+
+    @ManyToOne(targetEntity = TrackerEntity.class, cascade =  CascadeType.MERGE)
+    @JoinColumn(name = "tracker_id")
+    private TrackerEntity tracker;
 }

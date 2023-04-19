@@ -25,15 +25,16 @@ public class ProjectEntity
     @Column(unique = true)
     private String name;
 
+    @Builder.Default
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Instant createdAt;
+    private Instant createdAt = Instant.now();
 
+    @Builder.Default
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Instant updatedAt;
+    private Instant updatedAt = Instant.now();
 
     @Column
-    @OneToMany(cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "project" ,cascade = CascadeType.REMOVE)
     @Builder.Default
-    @JoinColumn(name = "project_id", referencedColumnName = "id")
     private List<TrackerEntity> trackers = new ArrayList<>();
 }

@@ -37,8 +37,8 @@ public class TranslationService {
                         .map(Element::text)
                         .collect(Collectors.toList());
             } catch (IOException e) {
-                log.error("Translation service error", e);
-                throw new TranslationServiceException("Failed to get translations for phrase: " + phrase, e);
+                log.error("Translation service error" , e);
+                throw new TranslationServiceException(String.format("Failed to get translations for phrase: %s",phrase));
             }
         });
     }
@@ -56,7 +56,7 @@ public class TranslationService {
                 )).collect(Collectors.toList());
             } catch (IOException e) {
                 log.error("Translation service error", e);
-                throw new TranslationServiceException(String.format("Failed to get examples for phrase: %s.", phrase), e);
+                throw new TranslationServiceException(String.format("Failed to get examples for phrase: %s", phrase));
             }
         });
     }
@@ -71,7 +71,7 @@ public class TranslationService {
                     .collect(Collectors.toList());
         } catch (IOException e) {
             log.error("Translation service error", e);
-            throw new TranslationServiceException("Failed to get translations for phrase: " + phrase, e);
+            throw new TranslationServiceException("Failed to get translations for phrase: " + phrase);
         }
     }
 
@@ -86,7 +86,7 @@ public class TranslationService {
             )).collect(Collectors.toList());
         } catch (IOException e) {
             log.error("Translation service error", e);
-            throw new TranslationServiceException(String.format("Failed to get examples for phrase: %s.", phrase), e);
+            throw new TranslationServiceException(String.format("Failed to get examples for phrase: %s.", phrase));
         }
     }
 
