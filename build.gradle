@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id "io.spring.dependency-management" version "1.1.0"
     id 'org.springframework.boot' version '3.0.2'
+    id "io.spring.dependency-management" version "1.1.0"
 }
 
 group 'by.temniakov'
@@ -10,6 +10,7 @@ version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }
+
 
 /**
  * Spring
@@ -28,7 +29,6 @@ dependencies {
 dependencies {
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.3'
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-60', version: '2.21.0'
-
 }
 
 /**
@@ -60,4 +60,17 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'by.temniakov.english.tracker.Application'
+    }
+}
+
+springBoot {
+    mainClass = 'by.temniakov.english.tracker.Application'
+}
+jar {
+    enabled = true
 }

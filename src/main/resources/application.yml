@@ -1,12 +1,12 @@
 ---
   server:
-    port: 9120
+    port: ${PORT:9120}
 
   spring:
     datasource:
-      url: jdbc:${DATABASE_JDBC_URL}
-      username: ${DATABASE_USERNAME}
-      password: ${DATABASE_PASSWORD}
+      url: ${SPRING_DATASOURCE_URL}
+      username: ${SPRING_DATASOURCE_USERNAME}
+      password: ${SPRING_DATASOURCE_PASSWORD}
       driver-class-name: org.postgresql.Driver
     jpa:
       hibernate:
